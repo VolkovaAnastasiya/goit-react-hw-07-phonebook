@@ -3,12 +3,13 @@ import ContactForm from 'components/ContactForm';
 // import { nanoid } from 'nanoid';
 // import Filter from 'components/Filter';
 import ContactList from 'components/ContactList';
-
+import { useFetchContactsQuery } from 'redux/contactSlice';
 import './App.module.css';
 // import { useDispatch, useSelector } from 'react-redux';
 // import { deleteItems, setFilter, setItems } from 'redux/contactSlice';
 
 function App() {
+  const { data } = useFetchContactsQuery();
   // const dispatch = useDispatch();
   // const contacts = useSelector(store => store.contactApi.contacts.items);
   // const filter = useSelector(store => store.contactApi.contacts.filter);
@@ -58,7 +59,7 @@ function App() {
 
       <h2>Contacts</h2>
       {/* <Filter filter={filter} onChange={changeFilter} /> */}
-      <ContactList />
+      {data && <ContactList />}
       {/* <ContactList onDeleteContact={deleteContact} contacts={visibleContact} /> */}
     </div>
   );
