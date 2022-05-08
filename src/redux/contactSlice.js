@@ -1,40 +1,41 @@
-import { createSlice } from '@reduxjs/toolkit';
+// import { createSlice } from '@reduxjs/toolkit';
 // import { persistReducer } from 'redux-persist';
 // import storage from 'redux-persist/lib/storage';
 
-const initialState = {
-  contacts: {
-    items: [],
-    filter: '',
-  },
-};
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-export const contactSlice = createSlice({
-  name: 'books',
-  initialState,
-  reducers: {
-    setItems(state, action) {
-      state.contacts.items.push(action.payload);
-    },
-    setFilter(state, action) {
-      state.contacts.filter = action.payload;
-    },
-    deleteItems: (state, action) => {
-      const newItems = state.contacts.items.filter(
-        contact => contact.id !== action.payload
-      );
-      state.contacts.items = newItems;
-    },
-  },
+// Define a service using a base URL and expected endpoints
+export const contactApi = createApi({
+  reducerPath: 'contactApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://6276be0e2f94a1d70606bcfd.mockapi.io/api/v1/',
+  }),
+  tagTypes: ['Contact'],
+  endpoints: builder => ({
+    fetchContacts: builder.query({
+      query: () => '/contacts',
+      providesTags: ['Contact'],
+    }),
+    deleteContact: builder.mutation({
+      query: contactId => ({
+        url: `/contacts/${contactId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Contact'],
+    }),
+    createContact: builder.mutation({
+      query: newContact => ({
+        url: `/contacts`,
+        method: 'POST',
+        body: newContact,
+      }),
+      invalidatesTags: ['Contact'],
+    }),
+  }),
 });
 
-// const persistConfig = {
-//   key: 'contacts',
-//   storage,
-// };
-
-// export const itemsReducer = persistReducer(persistConfig, contactSlice.reducer);
-export const { setFilter, setItems, deleteItems } = contactSlice.actions;
-export default contactSlice.reducer;
-// Selectors
-// export const getItemsValue = state => state.contacts.contacts;
+export const {
+  useFetchContactsQuery,
+  useDeleteContactMutation,
+  useCreateContactMutation,
+} = contactApi;
