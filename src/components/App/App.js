@@ -1,31 +1,16 @@
-// import { useEffect } from 'react';
+import { useState } from 'react';
 import ContactForm from 'components/ContactForm';
-// import { nanoid } from 'nanoid';
-// import Filter from 'components/Filter';
+
+import Filter from 'components/Filter';
 import ContactList from 'components/ContactList';
 import { useFetchContactsQuery } from 'redux/contactSlice';
 import './App.module.css';
+import { TailSpin } from 'react-loader-spinner';
 // import { useDispatch, useSelector } from 'react-redux';
-// import { deleteItems, setFilter, setItems } from 'redux/contactSlice';
 
 function App() {
-  const { data } = useFetchContactsQuery();
-  // const dispatch = useDispatch();
-  // const contacts = useSelector(store => store.contactApi.contacts.items);
-  // const filter = useSelector(store => store.contactApi.contacts.filter);
-
-  // useEffect(() => {
-  //   const parsContacts = JSON.parse(localStorage.getItem('contacts'));
-  //   if (parsContacts) {
-  //     // dispatch(setItems(parsContacts));
-  //     parsContacts.forEach(el => dispatch(setItems(el)));
-  //   }
-  // }, [dispatch]);
-
-  // useEffect(
-  //   () => localStorage.setItem('contacts', JSON.stringify(contacts)),
-  //   [contacts]
-  // );
+  const { data, isFetching } = useFetchContactsQuery();
+  const [filter, setFilter] = useState('');
 
   // const addContacts = data => {
   //   contacts.find(
@@ -33,10 +18,6 @@ function App() {
   //   )
   //     ? alert(`${data.name} is already in contact`)
   //     : dispatch(setItems({ ...data, id: nanoid() }));
-  // };
-
-  // const deleteContact = contactId => {
-  //   dispatch(deleteItems(contactId));
   // };
 
   // const getVisibleContact = () => {
@@ -54,13 +35,14 @@ function App() {
   return (
     <div>
       <h1>Phonebook</h1>
-      {/* <ContactForm onSubmit={addContacts} /> */}
-      <ContactForm />
+      <ContactForm contacts={data} />
+      {/* <ContactForm /> */}
+      {isFetching && <TailSpin color="#00BFFF" height={80} width={80} />}
 
       <h2>Contacts</h2>
-      {/* <Filter filter={filter} onChange={changeFilter} /> */}
-      {data && <ContactList />}
-      {/* <ContactList onDeleteContact={deleteContact} contacts={visibleContact} /> */}
+      <Filter filter={filter} onChange={setFilter} />
+      {/* {data && <ContactList contacts={getVisibleContacts(data, filter)} />} */}
+      {data && <ContactList contacts={data} />}
     </div>
   );
 }

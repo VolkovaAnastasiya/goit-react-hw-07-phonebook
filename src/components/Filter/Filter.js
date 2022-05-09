@@ -10,7 +10,7 @@ function Filter({ filter, onChange }) {
         className={s.input}
         type="text"
         value={filter}
-        onChange={onChange}
+        onChange={e => onChange(e.currentTarget.value)}
       ></input>
     </div>
   );

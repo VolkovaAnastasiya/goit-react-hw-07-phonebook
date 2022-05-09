@@ -1,15 +1,25 @@
 import { useState } from 'react';
-
+import { useCreateContactMutation } from 'redux/contactSlice';
+import { nanoid } from 'nanoid';
 import s from './ContactForm.module.css';
 import PropTypes from 'prop-types';
 
-function ContactForm({ onSubmit }) {
+function ContactForm({ contacts }) {
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
+  const [createContact, { isLoading }] = useCreateContactMutation();
 
   const reset = () => {
     setName('');
-    setNumber('');
+    setPhone('');
+  };
+
+  const addContacts = data => {
+    contacts.find(
+      contact => contact?.name?.toLowerCase() === data.name.toLowerCase()
+    )
+      ? alert(`${data.name} is already in contact`)
+      : createContact({ ...data, id: nanoid() });
   };
 
   const handleChange = e => {
@@ -19,8 +29,8 @@ function ContactForm({ onSubmit }) {
       case 'name':
         setName(value);
         break;
-      case 'number':
-        setNumber(value);
+      case 'phone':
+        setPhone(value);
         break;
 
       default:
@@ -33,7 +43,7 @@ function ContactForm({ onSubmit }) {
       className={s.form}
       onSubmit={e => {
         e.preventDefault();
-        onSubmit({ name, number });
+        addContacts({ name, phone });
         reset();
       }}
     >
@@ -57,16 +67,16 @@ function ContactForm({ onSubmit }) {
           className={s.input}
           type="tel"
           onChange={handleChange}
-          name="number"
-          value={number}
+          name="phone"
+          value={phone}
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
         />
       </label>
 
-      <button className={s.btn} type="submit">
-        Add contact
+      <button className={s.btn} type="submit" disabled={isLoading}>
+        {isLoading ? 'Creating...' : 'Add contact'}
       </button>
     </form>
   );
